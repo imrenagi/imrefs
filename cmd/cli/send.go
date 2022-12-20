@@ -24,9 +24,9 @@ func sendCmd() *cobra.Command {
 			}
 
 			name := args[0]
-			fileName := fmt.Sprintf("files/file-%s.tmp", name)
+			fileName := fmt.Sprintf(imrefs.FileFormat, name)
 			data := args[1]
-			conn, err := net.Dial("unix", fmt.Sprintf("files/file-%s.sock", name))
+			conn, err := net.Dial("unix", fmt.Sprintf(imrefs.SockFormat, name))
 			if err != nil {
 				return err
 			}

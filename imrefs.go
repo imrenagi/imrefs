@@ -11,8 +11,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var sockFormat = "files/file-%s.sock"
-var fileFormat = "files/file-%s.tmp"
+var SockFormat = "files/file-%s.sock"
+var FileFormat = "files/file-%s.tmp"
 
 type FS struct {
 	name string
@@ -29,11 +29,11 @@ func New(name string) *FS {
 }
 
 func (f *FS) fileName() string {
-	return fmt.Sprintf(fileFormat, f.name)
+	return fmt.Sprintf(FileFormat, f.name)
 }
 
 func (f *FS) Run(ctx context.Context) error {
-	l, err := net.Listen("unix", fmt.Sprintf(sockFormat, f.name))
+	l, err := net.Listen("unix", fmt.Sprintf(SockFormat, f.name))
 	if err != nil {
 		return err
 	}
@@ -77,9 +77,8 @@ func (f *FS) handleConn(conn net.Conn) {
 	case IPC_SEND:
 		f.write(conn, req.Content)
 	case IPC_STOP:
-		// TODO properly stop server
 		conn.Write([]byte("OK"))
-		os.Exit(0)
+		f.stop()
 	}
 }
 

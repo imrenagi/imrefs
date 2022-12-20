@@ -18,15 +18,14 @@ func stopCmd() *cobra.Command {
 		Short: "stop process",
 		RunE: func(c *cobra.Command, args []string) error {
 			name := args[0]
-			conn, err := net.Dial("unix", fmt.Sprintf("files/file-%s.sock", name))
+			conn, err := net.Dial("unix", fmt.Sprintf(imrefs.SockFormat, name))
 			if err != nil {
 				return err
 			}
 			defer conn.Close()
 
 			r := imrefs.Request{
-				Command:       imrefs.IPC_STOP,
-				ContentLength: 0,
+				Command: imrefs.IPC_STOP,
 			}
 
 			err = r.Write(conn)
@@ -40,7 +39,7 @@ func stopCmd() *cobra.Command {
 				return err
 			}
 
-			fmt.Println("Filesystem myfs1 stopped")
+			fmt.Printf("Filesystem %s stopped\n", name)
 			return nil
 		},
 	}

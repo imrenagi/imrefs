@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/imrenagi/imrefs"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +23,7 @@ func initCmd() *cobra.Command {
 			}
 
 			name := args[0]
-			fileName := fmt.Sprintf("files/file-%s.tmp", name)
+			fileName := fmt.Sprintf(imrefs.FileFormat, name)
 
 			lsCmd := exec.Command("go", "run", "cmd/main.go", "server", name)
 			err := lsCmd.Start()
