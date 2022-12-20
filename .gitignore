@@ -21,5 +21,5 @@
 go.work
 
 .idea/
-files/
+files/file-*
 test.txt
