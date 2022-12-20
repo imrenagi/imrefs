@@ -1,8 +1,12 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
+	"io"
+	"net"
 
+	"github.com/imrenagi/imrefs"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +23,32 @@ func sendCmd() *cobra.Command {
 				return fmt.Errorf("invalid args length. should only filesystem instance name and file content")
 			}
 
-			fmt.Println("Data successfully written at /tmp/file1234.tmp")
+			name := args[0]
+			fileName := fmt.Sprintf("files/file-%s.tmp", name)
+			data := args[1]
+			conn, err := net.Dial("unix", fmt.Sprintf("files/file-%s.sock", name))
+			if err != nil {
+				return err
+			}
+			defer conn.Close()
+
+			r := imrefs.Request{
+				Command:       imrefs.IPC_SEND,
+				ContentLength: uint64(len(data)),
+				Content:       io.NopCloser(bytes.NewBuffer([]byte(data))),
+			}
+
+			err = r.Write(conn)
+			if err != nil {
+				return err
+			}
+
+			buf := make([]byte, 1024)
+			_, err = conn.Read(buf)
+			if err != nil {
+				return err
+			}
+			fmt.Println(fmt.Sprintf("Data successfully written at %s", fileName))
 			return nil
 		},
 	}

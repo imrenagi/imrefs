@@ -21,15 +21,16 @@ func initCmd() *cobra.Command {
 				return fmt.Errorf("invalid args length. should only accept one argument")
 			}
 
-			lsCmd := exec.Command("go", "run", "cmd/main.go", "server")
+			name := args[0]
+			fileName := fmt.Sprintf("files/file-%s.tmp", name)
+
+			lsCmd := exec.Command("go", "run", "cmd/main.go", "server", name)
 			err := lsCmd.Start()
 			if err != nil {
 				return err
 			}
 
 			pid := lsCmd.Process.Pid
-			name := args[0]
-			fileName := fmt.Sprintf("files/file-%d-%s.tmp", pid, name)
 
 			f, err := os.OpenFile(fileName, os.O_CREATE, 0777)
 			if err != nil {
